@@ -1,0 +1,33 @@
+{
+  "name": "mediamemo",
+  "version": "0.0.0",
+  "description": "A nodejs stock media information into json.",
+  "author": "rbuas <rodrigobuas@gmail.com>",
+  "keywords": [
+    "media",
+    "photo",
+    "exif",
+    "test"
+  ],
+  "license": "MIT",
+  "main": "./index",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/rbuas/mediamemo.git"
+  },
+  "dependencies": {
+    "jsext": "^1.0.2",
+    "mediaext": "^1.0.0",
+    "memodb": "0.0.2",
+    "moment": "^2.18.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "express": "^4.15.2",
+    "mocha": "^2.4",
+    "yargs": "^4.8.0"
+  },
+  "scripts": {
+    "unittest": "mocha *.unittest.js"
+  }
+}
