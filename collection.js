@@ -1,11 +1,9 @@
 module.exports = CollectionDB;
 
-global.ROOT_DIR = process.cwd() || __dirname;
-
 var path = require("path");
-var jsext = require(ROOT_DIR + "/rocks/jsext");
-var MediaExt = require(ROOT_DIR + "/rocks/mediaext/mediaext");
-var MemoDB = require(ROOT_DIR + "/rocks/memodb");
+var jsext = require("jsext");
+var MediaExt = require("mediaext");
+var MemoDB = require("memodb");
 
 CollectionDB.extends( MemoDB );
 function CollectionDB (mediadb, options) {

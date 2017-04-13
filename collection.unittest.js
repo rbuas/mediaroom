@@ -1,11 +1,9 @@
-global.ROOT_DIR = process.cwd() || __dirname;
-
 var expect = require("chai").expect;
 var assert = require("chai").assert;
-var MemoCache = require(ROOT_DIR + "/rocks/memocache/memocache");
-var MemoDB = require(ROOT_DIR + "/rocks/memodb");
-var MediaDB = require(ROOT_DIR + "/rocks/mediaext/media");
-var CollectionDB = require(ROOT_DIR + "/rocks/mediaext/collection");
+var MemoCache = require("memocache");
+var MemoDB = require("memodb");
+var MediaDB = require("./media");
+var CollectionDB = require("./collection");
 
 describe("unit.collectiondb", function() {
     var mcache;

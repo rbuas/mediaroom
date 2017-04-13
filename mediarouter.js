@@ -1,10 +1,9 @@
 module.exports = MediaRouter;
 
 var path = require("path");
-var log = require(ROOT_DIR + "/rocks/jss/log");
-var jsext = require(ROOT_DIR + "/rocks/jsext");
-var MediaDB = require(ROOT_DIR + "/rocks/mediaext/media");
-var MemoRouter = require(ROOT_DIR + "/rocks/memodb/memorouter");
+var jsext = require("jsext");
+var MemoRouter = require("memodb").MemoRouter;
+var MediaDB = require("./media");
 
 MediaRouter.extends( MemoRouter );
 function MediaRouter (mdb, options) {
