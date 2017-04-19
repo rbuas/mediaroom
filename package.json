@@ -18,7 +18,7 @@
   "dependencies": {
     "jsext": "^1.0.2",
     "mediaext": "^1.0.0",
-    "memodb": "0.0.2",
+    "memodb": "^0.0.9",
     "moment": "^2.18.1"
   },
   "devDependencies": {

@@ -4,11 +4,15 @@ var path = require("path");
 var jsext = require("jsext");
 var MemoRouter = require("memodb").MemoRouter;
 var MediaDB = require("./media");
+var CollectionDB = require("./collection");
 
 MediaRouter.extends( MemoRouter );
-function MediaRouter (mdb, options) {
+function MediaRouter (mdb, cdb, options) {
     var self = this;
+    self.options = Object.assign({}, options);
+    MemoRouter.call(self, self.options);
     self.mdb = mdb;
+    self.cdb = mdb;
 }
 
 MediaRouter.prototype.get = function () {
