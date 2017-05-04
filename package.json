@@ -16,10 +16,10 @@
     "url": "http://github.com/rbuas/mediamemo.git"
   },
   "dependencies": {
-    "jsext": "^1.0.6",
-    "mediaext": "^1.0.2",
-    "memodb": "^0.0.9",
-    "moment": "^2.18.1"
+    "jsext": "*",
+    "mediaext": "*",
+    "memodb": "*",
+    "moment": "*"
   },
   "devDependencies": {
     "chai": "^3.5.0",
