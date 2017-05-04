@@ -1,6 +1,6 @@
 {
   "name": "mediamemo",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "A nodejs stock media information into json.",
   "author": "rbuas <rodrigobuas@gmail.com>",
   "keywords": [
