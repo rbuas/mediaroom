@@ -4,6 +4,7 @@ var path = require("path");
 var jsext = require("jsext");
 var MediaExt = require("mediaext");
 var MemoDB = require("memodb");
+var MediaRouter = require("./mediarouter");
 
 MediaDB.extends( MemoDB );
 function MediaDB (options) {
@@ -17,6 +18,7 @@ function MediaDB (options) {
     }, options);
     self.master = self.options.master;
     MemoDB.call(self, self.options);
+    self.router = new MediaRouter(self);
 }
 
 MediaDB.ERROR = {
