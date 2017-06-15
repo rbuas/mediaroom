@@ -13,7 +13,7 @@ describe("unit.collectiondb", function() {
     before(function() {
         mcache = new MemoCache({maxSize:5000});
         mediadb = new MediaDB({mcache:mcache, memopath:ROOT_DIR + "/test/media"});
-        collectiondb = new CollectionDB(mediadb, {mcache:mcache, memopath:ROOT_DIR + "/test/album"});
+        collectiondb = new CollectionDB(mediadb, {mcache:mcache, memopath:ROOT_DIR + "/test/collection"});
     });
 
     after(function() { delete(mcache); });
@@ -48,7 +48,7 @@ describe("unit.collectiondb", function() {
         });
     });
 
-    describe("scrapAlbum", function() {
+    describe("scrapCollection", function() {
         beforeEach(function(done) {
             Promise.all([
                 mediadb.removeAll(),
@@ -72,7 +72,7 @@ describe("unit.collectiondb", function() {
         });
 
         it("must get an error because the parameter is not a saved collection", function(done) {
-            collectiondb.scrapAlbum("noncollection")
+            collectiondb.scrapCollection("noncollection")
             .then(function(collection) {
                 done(new Error("should not pass here, because the scrap have to fail"));
             })
@@ -84,8 +84,8 @@ describe("unit.collectiondb", function() {
             .catch(done);
         });
 
-        it("must return a collections with empty array of medias because there isn't a master folder inside of album", function(done) {
-            collectiondb.scrapAlbum("media-nomaster")
+        it("must return a collections with empty array of medias because there isn't a master folder inside of collection", function(done) {
+            collectiondb.scrapCollection("media-nomaster")
             .then(function(collection) {
                 expect(collection).to.be.ok;
                 expect(collection.contentlist).to.be.ok;
@@ -95,8 +95,8 @@ describe("unit.collectiondb", function() {
             .catch(done);
         });
 
-        it("must get an empty array of medias because there is no medias into the master folder of the album", function(done) {
-            collectiondb.scrapAlbum("media-empty")
+        it("must get an empty array of medias because there is no medias into the master folder of the collection", function(done) {
+            collectiondb.scrapCollection("media-empty")
             .then(function(collection) {
                 expect(collection).to.be.ok;
                 expect(collection.contentlist).to.be.ok;
@@ -107,7 +107,7 @@ describe("unit.collectiondb", function() {
         });
 
         it("must get an array of medias readed from the folder images/web", function(done) {
-            collectiondb.scrapAlbum("images")
+            collectiondb.scrapCollection("images")
             .then(function(collection) {
                 expect(collection).to.be.ok;
                 expect(collection.contentlist).to.be.ok;

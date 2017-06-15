@@ -3,16 +3,16 @@ module.exports = CollectionDB;
 var path = require("path");
 var jsext = require("jsext");
 var MediaExt = require("mediaext");
-var MemoDB = require("memodb");
+var MemoDB = require("../memodb");
 
 CollectionDB.extends( MemoDB );
 function CollectionDB (mediadb, options) {
     var self = this;
     self.options = Object.assign({
-        type : "col",
+        type : "collection",
         schema : self.SCHEMA,
         schemadefault : self.SCHEMADEFAULT,
-        root : path.join(ROOT_DIR, "media")
+        root : path.join(ROOT_DIR, "collection")
     }, options);
     MemoDB.call(self, self.options);
     self.mediadb = mediadb;
@@ -21,44 +21,17 @@ function CollectionDB (mediadb, options) {
 CollectionDB.ERROR = {
     MISSING_PARAMS : "Missing required params",
     NODIR : "No directory",
-    ALBUM_NOTFOUND : "Can not found the album"
+    COLLECTION_NOTFOUND : "Can not found the collection"
 };
 
-CollectionDB.prototype.SCHEMA = {
-    id : String,
-    since : Date,
-    lastupdate : Date,
-    status : String,
-    author : String,
-
-    path : String,
-    alias : Array,
-    priority : Number,
-    type : String,
-
-    title : String,
-    resume : String,
-    content : String,
-    contentlist : Array,
-    category : Array,
-    crosslink : Array
-}
+CollectionDB.prototype.SCHEMA = Object.assign(MemoDB.WapModel.SCHEMA, {
+    path : String
+});
 
 CollectionDB.prototype.SCHEMADEFAULT = function() {
-    return {
-        since : Date.now(),
-        lastupdate : Date.now(),
-        status : "PUBLIC",
-        author : "",
-
-        type : "",
-        title : "",
-        resume : "",
-        content : "",
-        contentlist : [],
-        category : [],
-        crosslink : []
-    };
+    return Object.assign(MemoDB.WapModel.SCHEMADEFAULT(), {
+        type : "collection"
+    });
 }
 
 /**
@@ -96,18 +69,18 @@ CollectionDB.prototype.scrapTargets = function(rootdir) {
 }
 
 /**
- * scrapAlbum Search into a registered album path for new medias.
- * @param {String} id Album id
+ * scrapCollection Search into a registered collection path for new medias.
+ * @param {String} id Collection id
  * @return {Promise} Responses as reject({error:String, internalerror:error}) or resolve(collection) 
  */
-CollectionDB.prototype.scrapAlbum = function(id) {
+CollectionDB.prototype.scrapCollection = function(id) {
     var self = this;
     if(!self.mediadb) throw new Error("missing mediadb");
 
     return new Promise(function(resolve, reject) {
         self.get(id)
         .then(function(collection) {
-            if(!collection || !collection.id) reject({error:CollectionDB.ERROR.ALBUM_NOTFOUND});
+            if(!collection || !collection.id) reject({error:CollectionDB.ERROR.COLLECTION_NOTFOUND});
 
             if(!collection.path) return;
 
@@ -130,4 +103,14 @@ CollectionDB.prototype.scrapAlbum = function(id) {
         .then(resolve)
         .catch(reject);
     });
+}
+
+CollectionDB.prototype.collection = function(id, props) {
+    var self = this;
+    return self.get(id, props);
+}
+
+CollectionDB.prototype.collections = function (categories, props) {
+    var self = this;
+    return self.getIndex("category", categories, props);
 }
