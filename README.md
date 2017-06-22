@@ -1,4 +1,4 @@
-# mediamemo
+# mediaroom
 
 A nodejs stock media information into json.
 
@@ -13,18 +13,18 @@ A nodejs stock media information into json.
 
 Installing using npm (node package manager):
 
-    npm install mediamemo
+    npm install mediaroom
 
 Or clone it direct from the repository :
 
-    git clone git://github.com/rbuas/mediamemo.git mediamemo
+    git clone git://github.com/rbuas/mediaroom.git mediaroom
 
 ## Usage
 
-Require _mediamemo_ and start to use the api functions or manipulate objects by own methods.
+Require _mediaroom_ and start to use the api functions or manipulate objects by own methods.
 
 ```javascript
-var mediamemo = require('mediamemo');
+var mediaroom = require('mediaroom');
 
 //TODO
 ```
@@ -35,4 +35,4 @@ There are a lot of things still to be done and to be made better. If you have an
 
 ## License
 
-_mediamemo_ is licensed under the MIT License. (See LICENSE)
+_mediaroom_ is licensed under the MIT License. (See LICENSE)

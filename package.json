@@ -1,19 +1,19 @@
 {
-  "name": "mediamemo",
+  "name": "mediaroom",
   "version": "0.0.10",
-  "description": "A nodejs stock media information into json.",
+  "description": "A nodejs library to read media information and stock it using memos with json format.",
   "author": "rbuas <rodrigobuas@gmail.com>",
   "keywords": [
     "media",
     "photo",
     "exif",
-    "test"
+    "memo"
   ],
   "license": "MIT",
   "main": "./index",
   "repository": {
     "type": "git",
-    "url": "http://github.com/rbuas/mediamemo.git"
+    "url": "http://github.com/rbuas/mediaroom.git"
   },
   "dependencies": {
     "jsext": "*",
