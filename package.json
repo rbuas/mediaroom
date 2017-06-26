@@ -1,6 +1,6 @@
 {
   "name": "mediaroom",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A nodejs library to read media information and stock it using memos with json format.",
   "author": "rbuas <rodrigobuas@gmail.com>",
   "keywords": [
