@@ -1,18 +1,20 @@
 module.exports = MediaRouter;
 
-var path = require("path");
-var jsext = require("jsext");
-var MemoRouter = require("memodb").MemoRouter;
-var MediaDB = require("./media");
-var CollectionDB = require("./collection");
+const path = require("path");
+const jsext = require("jsext");
+const MemoRouter = require("memodb").MemoRouter;
+
+const MediaDB = require("./media");
+const CollectionDB = require("./collection");
+const MediaDrone = require("./mediadrone");
 
 MediaRouter.extends( MemoRouter );
-function MediaRouter (mdb, cdb, options) {
+function MediaRouter (mediadb, collectiondb, options) {
     var self = this;
     self.options = Object.assign({}, options);
     MemoRouter.call(self, self.options);
-    self.mdb = mdb;
-    self.cdb = mdb;
+    self.mdb = mediadb;
+    self.cdb = collectiondb;
 }
 
 MediaRouter.prototype.get = function () {
@@ -28,16 +30,16 @@ MediaRouter.prototype.get = function () {
             return responseFormatedMedia(res, media, self.mdb.TYPE, format);
         })
         .catch(function(err) {
-            res.json({status:"ERROR", error:"creation error : " + (err && err.error)});
+            res.json({status:"ERROR", error:"get error : " + (err && err.error)});
         });
     }
 }
 
-MediaRouter.prototype.scrapTargets = function() {
+MediaRouter.prototype.scrapAlbums = function() {
     var self = this;
     return function (req, res) {
         //call api
-        self.mdb.scrapTargets()
+        MediaDrone.scrapAlbums(self.cdb)
         .then(function(albums) {
             var response = {status:"SUCCESS"};
             response.albums = albums;
@@ -56,7 +58,7 @@ MediaRouter.prototype.scrapAlbum = function() {
         var albumid = req.params.album;
 
         //call api
-        self.mdb.scrapAlbum(albumid)
+        MediaDrone.scrapAlbum(self.mdb, albumid)
         .then(function(album) {
             var response = {status:"SUCCESS"};
             response.album = album;
@@ -71,10 +73,42 @@ MediaRouter.prototype.scrapAlbum = function() {
 MediaRouter.prototype.collection = function() {
     var self = this;
     return function (req, res) {
-        //TODO
+        //prepare params
+        var collectionid = req.params.collection;
+        var pick = req.params.pick && req.params.pick.split("|");
+
+        //call api
+        self.cdb.get(collectionid, pick)
+        .then(function(collection) {
+            var response = {status:"SUCCESS"};
+            response.collection = collection;
+            res.json(response);
+        })
+        .catch(function(err) {
+            res.json({status:"ERROR", error:"collection error : " + (err && err.error)});
+        });
     };
 }
 
+MediaRouter.prototype.collections = function() {
+    var self = this;
+    return function (req, res) {
+        //prepare params
+        var categories = req.params.category && req.params.category.split("|");;
+        var pick = req.params.pick && req.params.pick.split("|");
+
+        //call api
+        self.cdb.collections(categories, pick)
+        .then(function(collectionlist) {
+            var response = {status:"SUCCESS"};
+            response.collectionlist = collectionlist;
+            res.json(response);
+        })
+        .catch(function(err) {
+            res.json({status:"ERROR", error:"collection error : " + (err && err.error)});
+        });
+    };
+}
 
 
 // PRIVATE

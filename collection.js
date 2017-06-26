@@ -1,9 +1,11 @@
 module.exports = CollectionDB;
 
-var path = require("path");
-var jsext = require("jsext");
-var MediaExt = require("mediaext");
-var MemoDB = require("../memodb");
+const path = require("path");
+const jsext = require("jsext");
+const MediaExt = require("mediaext");
+const MemoDB = require("memodb");
+
+const MediaDrone = require("./mediadrone"); 
 
 CollectionDB.extends( MemoDB );
 function CollectionDB (mediadb, options) {
@@ -12,10 +14,11 @@ function CollectionDB (mediadb, options) {
         type : "collection",
         schema : self.SCHEMA,
         schemadefault : self.SCHEMADEFAULT,
-        root : path.join(ROOT_DIR, "collection")
+        root : path.join(ROOT_DIR, "albums")
     }, options);
     MemoDB.call(self, self.options);
     self.mediadb = mediadb;
+    self.root = self.options.root;
 }
 
 CollectionDB.ERROR = {
@@ -34,46 +37,17 @@ CollectionDB.prototype.SCHEMADEFAULT = function() {
     });
 }
 
-/**
- * scrapTargets Search into a root directory for new targets collections subdirectories and save into collection db.
- * @param {String} rootdir Directory to search for new targets
- * @return {Promise} Responses as reject({error:String, internalerror:error}) or resolve([<collection.id>]) 
- */
-CollectionDB.prototype.scrapTargets = function(rootdir) {
+CollectionDB.prototype.collections = function (categories, props) {
     var self = this;
-    rootdir = rootdir || self.options.root;
-    return new Promise(function(resolve, reject) {
-        if(!rootdir) return reject({error:CollectionDB.ERROR.MISSING_PARAMS});
-
-        rootdir = path.normalize(rootdir);
-        if(!jsext.isDir(rootdir)) return reject({error:CollectionDB.ERROR.NODIR, rootdir:rootdir});
-
-        var targets = jsext.listSubdir(rootdir);
-        if(!targets || targets.length == 0) return resolve(files);
-
-        var tasks = targets.map(function(target) {
-            var targetid = target;
-            var collectionPath = path.normalize(path.join(rootdir, target));
-            return !self.exists(target) && self.create({id:targetid, path:collectionPath});
-        });
-        return Promise.all(tasks)
-        .then(function(collections) {
-            var newCollections = collections.map(function(collection) {
-                return collection && collection.id;
-            });
-            return newCollections;
-        })
-        .then(resolve)
-        .catch(reject);
-    });
+    return self.getIndex("category", categories, props);
 }
 
 /**
- * scrapCollection Search into a registered collection path for new medias.
+ * scrapPath Search into a registered collection path for new medias.
  * @param {String} id Collection id
  * @return {Promise} Responses as reject({error:String, internalerror:error}) or resolve(collection) 
  */
-CollectionDB.prototype.scrapCollection = function(id) {
+CollectionDB.prototype.scrapPath = function(id) {
     var self = this;
     if(!self.mediadb) throw new Error("missing mediadb");
 
@@ -84,10 +58,7 @@ CollectionDB.prototype.scrapCollection = function(id) {
 
             if(!collection.path) return;
 
-            var collectionIn = path.join(collection.path, self.mediadb.master);
-            if(!jsext.isDir(collectionIn)) return;
-
-            return self.mediadb.scrapdir(collectionIn, collection.path)
+            return MediaDrone.scrapAlbum(self.mediadb, collection.path);
         })
         .then(function(medias) {
             if(!medias) return;
@@ -103,14 +74,4 @@ CollectionDB.prototype.scrapCollection = function(id) {
         .then(resolve)
         .catch(reject);
     });
-}
-
-CollectionDB.prototype.collection = function(id, props) {
-    var self = this;
-    return self.get(id, props);
-}
-
-CollectionDB.prototype.collections = function (categories, props) {
-    var self = this;
-    return self.getIndex("category", categories, props);
 }

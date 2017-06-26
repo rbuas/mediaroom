@@ -1,10 +1,12 @@
 module.exports = MediaDB;
 
-var path = require("path");
-var jsext = require("jsext");
-var MediaExt = require("mediaext");
-var MemoDB = require("memodb");
-var MediaRouter = require("./mediarouter");
+const path = require("path");
+const jsext = require("jsext");
+const MediaExt = require("mediaext");
+const MemoDB = require("memodb");
+
+const MediaRouter = require("./mediarouter");
+const CollectionDB = require("./collection");
 
 MediaDB.extends( MemoDB );
 function MediaDB (options) {
@@ -13,12 +15,28 @@ function MediaDB (options) {
         type : "media",
         schema : self.SCHEMA,
         schemadefault : self.SCHEMADEFAULT,
-        master : "web",
-        versions : MediaExt.VERSIONS
+        masterversion : "web",
+        versions : MediaExt.VERSIONS,
+        mediatypes : ["jpg"],
+        collectiontype : "collection",
+        collectionroot : "albums",
+        collectionpath : null
     }, options);
-    self.master = self.options.master;
+
+    // public read only
+    self.masterversion = self.options.masterversion;
+    self.versions = self.options.versions;
+    self.mediatypes = self.options.mediatypes;
+
     MemoDB.call(self, self.options);
-    self.router = new MediaRouter(self);
+
+    self.collection = self.options.collectiontype && new CollectionDB(self, {
+        type : self.options.collectiontype,
+        memopath : self.options.collectionpath,
+        root : self.options.collectionroot,
+        mcache : self.mcache
+    });
+    self.router = new MediaRouter(self, self.collection);
 }
 
 MediaDB.ERROR = {
@@ -85,39 +103,6 @@ MediaDB.prototype.SCHEMADEFAULT = function() {
         publicrating : 0,
         ratingcount : 0,
     };
-}
-
-MediaDB.prototype.READEDFILES = ["jpg"];
-
-MediaDB.prototype.scrapdir = function(dirIn, dirOut, merge) {
-    var self = this;
-    return new Promise(function(resolve, reject) {
-        var responseinfos;
-        MediaExt.scrapdir(dirIn, self.READEDFILES)
-        .then(function(mediainfos) {
-            var tasks = mediainfos.map(function(mediainfo) {
-                if(dirOut) mediainfo.path = dirOut;
-                return self.stock(mediainfo, merge);
-            });
-            return Promise.all(tasks);
-        })
-        .then(function(stockedinfos) {
-            if(!dirOut) return resolve(stockedinfos);
-
-            responseinfos = stockedinfos;
-            var tasks = stockedinfos.map(function(stockedinfo) {
-                if(!stockedinfo || !stockedinfo.id || !stockedinfo.type) return;
-                var file = stockedinfo.id + "." + stockedinfo.type;
-                return MediaExt.generateVersions(dirOut, file, self.master, self.options.versions);
-            });
-            return Promise.all(tasks);
-        })
-        .then(function(versions) {
-            //TODO log errors from versions
-            resolve(responseinfos);
-        })
-        .catch(reject);
-    });
 }
 
 /**
