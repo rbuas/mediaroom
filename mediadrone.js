@@ -1,10 +1,8 @@
-module.exports = MediaDrone;
+module.exports = MediaDrone = {};
 
 const path = require("path");
 const jsext = require("jsext");
 const MediaExt = require("mediaext");
-
-var MediaDrone = {};
 
 MediaDrone.ERROR = {
     MISSING_PARAMS : "Missing required params",
@@ -31,18 +29,15 @@ MediaDrone.scrapAlbums = function(collectiondb) {
         var albums = jsext.listSubdir(albumsRoot);
         if(!albums || albums.length == 0) return resolve(files);
 
-        var tasks = albums.map(function(album) {
-            var albumid = album;
-            var collectionPath = path.normalize(path.join(albumsRoot, album));
+        var tasks = albums.map((albumid) => {
+            var collectionPath = path.normalize(path.join(albumsRoot, albumid));
             return !collectiondb.exists(albumid) && collectiondb.create({id:albumid, path:collectionPath, status:"PRIVATE"});
         });
 
         return Promise.all(tasks)
         .then(function(newCollections) {
             newCollections = newCollections.clean();
-            var newCollectionsIds = newCollections.map(function(collection) {
-                return collection && collection.id;
-            });
+            var newCollectionsIds = newCollections.map((collection) => (collection && collection.id));
             return newCollectionsIds;
         })
         .then(resolve)
